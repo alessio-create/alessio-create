@@ -42,7 +42,9 @@ while True:
     repos += batch; page += 1
     if len(batch) < 100: break
 
-commits = added = deleted = 0
+MINE = {login, "Alessiodaleo"}  # both of my GitHub accounts; commits made with my personal email land on the second
+BOTS = {"claude"}                 # commits Claude made for me: counted apart, and in lines of code
+commits = bot_commits = added = deleted = 0
 for r in repos:
     for _ in range(8):  # GitHub answers 202 while it computes the stats: retry
         status, stats = api(f"/repos/{r['full_name']}/stats/contributors")
@@ -50,8 +52,10 @@ for r in repos:
         time.sleep(4)
     if status == 202: print("skipped (stats still computing):", r["full_name"])  # next run catches it
     for s in stats or []:
-        if (s.get("author") or {}).get("login") == login:
-            commits += s["total"]
+        who = (s.get("author") or {}).get("login")
+        if who in MINE | BOTS:
+            if who in MINE: commits += s["total"]
+            else: bot_commits += s["total"]
             added += sum(w["a"] for w in s["weeks"])
             deleted += sum(w["d"] for w in s["weeks"])
 
@@ -92,7 +96,8 @@ info = [
     blank,
     title("GitHub Stats"),
     stat("Repos", n(v["repositories"]["totalCount"])) + [(" | ", "dot")] + stat("PRs merged", n(v["pullRequests"]["totalCount"]))[1:],
-    stat("Commits", n(commits)) + [(" | ", "dot")] + stat("Contributions", n(contributions))[1:],
+    stat("Commits", n(commits)) + [(" | ", "dot")] + stat("by Claude", n(bot_commits))[1:],
+    stat("Contributions", n(contributions)),
     stat("Lines of Code", n(added - deleted)) + [(" ( ", "dot"), (n(added) + "++", "add"), (", ", "dot"),
         (n(deleted) + "--", "del"), (" )", "dot")],
 ]
@@ -133,4 +138,4 @@ def svg(t):
 
 for t in THEMES:
     (HERE / f"{t}.svg").write_text(svg(t), encoding="utf-8")
-print(f"repos {len(repos)} commits {commits} +{added} -{deleted} contributions {contributions}")
+print(f"repos {len(repos)} commits {commits} claude {bot_commits} +{added} -{deleted} contributions {contributions}")

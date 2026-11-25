@@ -28,7 +28,7 @@
 <tspan x="28" dy="20">      :+:-+=::::::.:::::::::::::::-==+%@=:==:-=--=:+</tspan>
 <tspan x="28" dy="20">      .==.=#-:----:::::::::::::-::==+***+-::--:::::+</tspan>
 <tspan x="28" dy="20">      :=-:-@#-=+==--::.::-:::::-==-=+=:.+::-:-::--:</tspan>
-</text><text x="563" y="68" xml:space="preserve">
+</text><text x="563" y="48" xml:space="preserve">
 <tspan x="563" dy="20"><tspan class="dot"></tspan><tspan class="head">github@alessio-create</tspan><tspan class="dot"> ───────────────────────────────</tspan></tspan>
 <tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">OS</tspan><tspan class="dot">: </tspan><tspan class="dot">...................................</tspan> <tspan class="val">Claude Code</tspan></tspan>
 <tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Uptime</tspan><tspan class="dot">: </tspan><tspan class="dot">.......................</tspan> <tspan class="val">shipping since 2021</tspan></tspan>
@@ -49,6 +49,7 @@
 <tspan x="563" dy="20"><tspan class="dot">.</tspan></tspan>
 <tspan x="563" dy="20"><tspan class="dot">- </tspan><tspan class="head">GitHub Stats</tspan><tspan class="dot"> ──────────────────────────────────────</tspan></tspan>
 <tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Repos</tspan><tspan class="dot">: </tspan><tspan class="num">50</tspan><tspan class="dot"> | </tspan><tspan class="key">PRs merged</tspan><tspan class="dot">: </tspan><tspan class="num">1,981</tspan></tspan>
-<tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Commits</tspan><tspan class="dot">: </tspan><tspan class="num">2,131</tspan><tspan class="dot"> | </tspan><tspan class="key">Contributions</tspan><tspan class="dot">: </tspan><tspan class="num">5,180</tspan></tspan>
-<tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Lines of Code</tspan><tspan class="dot">: </tspan><tspan class="num">163,594</tspan><tspan class="dot"> ( </tspan><tspan class="add">253,705++</tspan><tspan class="dot">, </tspan><tspan class="del">90,111--</tspan><tspan class="dot"> )</tspan></tspan>
+<tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Commits</tspan><tspan class="dot">: </tspan><tspan class="num">8,897</tspan><tspan class="dot"> | </tspan><tspan class="key">by Claude</tspan><tspan class="dot">: </tspan><tspan class="num">5,164</tspan></tspan>
+<tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Contributions</tspan><tspan class="dot">: </tspan><tspan class="num">6,473</tspan></tspan>
+<tspan x="563" dy="20"><tspan class="dot">. </tspan><tspan class="key">Lines of Code</tspan><tspan class="dot">: </tspan><tspan class="num">2,770,805</tspan><tspan class="dot"> ( </tspan><tspan class="add">3,572,273++</tspan><tspan class="dot">, </tspan><tspan class="del">801,468--</tspan><tspan class="dot"> )</tspan></tspan>
 </text></svg>
