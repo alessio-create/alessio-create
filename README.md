@@ -47,6 +47,14 @@ The kit from my workshop on building your own team of AI agents: Leo, the chief 
 <tr>
 <td colspan="2" valign="top">
 
+**[Claude Code OS](https://github.com/alessio-create/claude-code-os)** · open source<br>
+The setup I run my work on: memory that writes itself at the end of each session, agents that learn from their own mistakes, skills that improve from real use.
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
 **Also shipped:** **LexIT**, an Italian AI legal assistant grounded in official sources · **Snail**, a visual board app with its own Claude connector · **Claude per Avvocati**, a paid course that teaches lawyers to work with Claude.
 
 </td>
