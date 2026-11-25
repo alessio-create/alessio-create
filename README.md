@@ -1,3 +1,5 @@
+# Builder. Yes, I'm a human.
+
 ### I build the systems that make growth happen.
 
 AI agents, client-acquisition engines, websites and internal tools, shipped for real clients.
