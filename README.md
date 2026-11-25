@@ -1,5 +1,10 @@
 # Builder. Yes, I'm a human.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="card/dark.svg">
+  <img src="card/light.svg" width="100%" alt="Alessio D'Aleo profile card: ASCII portrait, stack and live GitHub stats">
+</picture>
+
 ### I build the systems that make growth happen.
 
 AI agents, client-acquisition engines, websites and internal tools, shipped for real clients.
