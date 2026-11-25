@@ -1,5 +1,3 @@
-<a href="https://www.alessiodaleo.xyz"><img src="assets/banner.svg" width="100%" alt="Alessio D'Aleo. Builder. I don't sell ideas I haven't built."></a>
-
 ### I build the systems that make growth happen.
 
 AI agents, client-acquisition engines, websites and internal tools, shipped for real clients.
