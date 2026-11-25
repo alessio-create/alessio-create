@@ -55,6 +55,13 @@ The kit from my workshop on building your own team of AI agents: Leo, the chief 
 
 ## How I build
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/alessio-create/alessio-create/output/snake-dark.svg">
+  <img alt="Contribution graph eaten by a snake" src="https://raw.githubusercontent.com/alessio-create/alessio-create/output/snake-light.svg" width="100%">
+</picture>
+
+<img src="https://streak-stats.demolab.com?user=alessio-create&hide_current_streak=true&background=00000000&ring=0F5FCC&fire=E7302F&currStreakNum=0F5FCC&sideNums=0F5FCC&sideLabels=8B949E&dates=8B949E&stroke=30363D&border=30363D" alt="Total contributions and longest streak" height="150">
+
 My own setup runs on AI: Claude Code as the operating system, 25+ tools connected via MCP, 15 scheduled cloud routines and agents that handle the execution. I keep my time for judgement and architecture.
 
 <p>
