@@ -1,4 +1,4 @@
-# Draws the profile card (card/card.svg): a CRT terminal with live GitHub stats, my ASCII shadow, binary rain.
+# Draws the profile card (card/card.svg): a CRT terminal with live GitHub stats, my ASCII portrait, binary rain.
 # The look lives in crt.py; the portrait and titles come from static.py (run locally).
 # Needs GH_TOKEN: a classic token with `repo` + `read:user`, so private repos are counted.
 # Runs daily from .github/workflows/card.yml. Locally: GH_TOKEN=$(gh auth token) py card/today.py
@@ -114,19 +114,18 @@ PROMPT_I = len(info) - 1
 
 ST = json.loads((HERE / "static.json").read_text())          # made by static.py
 FS, LH, CW = 16, 20, 9.6                                      # font size, line height, JetBrains Mono advance (0.6em)
-FW, FH = ST["fig"]
+A = ST["art"]                                                 # the ASCII portrait (art.txt via static.py)
 PX, PY, PAD = 470, 28, 22                                     # terminal panel: left edge, top, inner padding
 PW = round(W * CW + PAD * 2)
 INFO_X, BAR_Y = PX + PAD, PY + 24 + ST["title"]["size"][1] * 4 + 12
 info_top = BAR_Y + 26
 height = round(info_top + (len(info) + 1) * LH + 18 + PY)     # +1 row: the answer under the prompt
 width = PX + PW + 28
-FX, FY = 6, height - FH                                       # the figure stands on the bottom edge
+FX, FY = 16, height - A["h"] - 8                              # the portrait stands near the bottom edge
 EX, EY = FX + ST["eye"][0], FY + ST["eye"][1]
 b64 = lambda f: base64.b64encode((HERE / f).read_bytes()).decode()
 font = b64("mono.ttf")
-C = dict(dot=DIM, key=G2, val=PALE, head=G, num=G, add=G, dl=RED,
-         s0="#0B2014", s1="#123321", s2="#1C4A30", s3="#2C6A45", rim=G2)   # shadow tones dark -> light, rim
+C = dict(dot=DIM, key=G2, val=PALE, head=G, num=G, add=G, dl=RED)
 
 css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
        + "".join(f".{k}{{fill:{c}}}" for k, c in C.items() if k != "dl") + f".del{{fill:{RED}}}" + CSS
@@ -137,13 +136,22 @@ css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) for
        + f"@keyframes move{{0%{{transform:none;animation-timing-function:steps({len(CMD)},end)}}"
        + f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}92%,100%{{transform:none}}}}"
        + ".ans{animation:ans 8s infinite}@keyframes ans{0%,22%{opacity:0}23%,85%{opacity:1}86%,100%{opacity:0}}"
-       + "@media (prefers-reduced-motion:reduce){.eye,.live,.typer,.cur,.ans{animation:none}}")
+       # portrait: a few rows jump sideways now and then (flashing pale/red); the whole block glitches too (.glitch)
+       + f".row{{fill:{G};fill-opacity:.85}}.rg{{animation:rg 7s steps(1) infinite}}"
+       + f"@keyframes rg{{0%{{transform:translateX({A['cw'] * 3}px);fill:{PALE}}}2%{{transform:translateX(-{A['cw'] * 2}px);fill:{RED}}}4%,100%{{transform:none}}}}"
+       + "@media (prefers-reduced-motion:reduce){.eye,.live,.typer,.cur,.ans,.rg{animation:none}}")
 
-def shadow_svg():  # my silhouette in ASCII (rows of [text, tone] from static.py)
-    sh, out = ST["shadow"], []
-    for i, row in enumerate(sh["rows"]):
-        spans = "".join(f'<tspan class="{c}">{html.escape(t)}</tspan>' if c else t for t, c in row)
-        out.append(f'<text x="{FX}" y="{FY + (i + 1) * sh["lh"]}" font-size="{sh["fs"]}" xml:space="preserve">{spans}</text>')
+GLITCH = {3: (1.3, 7), 8: (3.1, 9), 13: (4.4, 6.5), 19: (5.7, 11), 23: (2.2, 8)}   # row: (delay s, period s)
+
+def art_svg():  # the ASCII portrait; the red eye sits inside the same block so it glitches with it
+    out = ['<g class="glitch">']
+    for i, line in enumerate(A["rows"]):
+        cls, st = "row", ""
+        if i in GLITCH: cls, st = "row rg", f' style="animation-delay:{GLITCH[i][0]}s;animation-duration:{GLITCH[i][1]}s"'
+        out.append(f'<text class="{cls}"{st} x="{FX}" y="{FY + (i + 1) * A["lh"]:.1f}" font-size="{A["fs"]}" '
+                   f'xml:space="preserve">{html.escape(line) or " "}</text>')
+    out.append(f'<circle class="eye" cx="{EX}" cy="{EY}" r="7" fill="{RED}" filter="url(#glow)"/>'
+               f'<circle cx="{EX}" cy="{EY}" r="2.5" fill="#FFC2B8"/></g>')
     return "".join(out)
 
 base = lambda i: info_top + (i + 1) * LH                       # baseline of info row i
@@ -154,9 +162,9 @@ out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height
        f"<style>{css}</style>", DEFS,
        f'<rect width="100%" height="100%" rx="14" fill="{BG}"/><g class="flick">',
        f'<g opacity=".6">{rain(8, PX, height, seed=1)}</g>',
-       f'<image href="data:image/png;base64,{b64("halo.png")}" x="{FX}" y="{FY}" width="{FW}" height="{FH}"/>',
-       shadow_svg(),
-       f'<circle class="eye" cx="{EX}" cy="{EY}" r="8" fill="{RED}" filter="url(#glow)"/><circle cx="{EX}" cy="{EY}" r="3" fill="#FFC2B8"/>',
+       f'<image href="data:image/png;base64,{b64("halo.png")}" x="{FX - A["pad"]}" y="{FY - A["pad"]}" '
+       f'width="{A["w"] + 2 * A["pad"]}" height="{A["h"] + 2 * A["pad"]}"/>',
+       art_svg(),
        f'<rect x="{PX}" y="{PY}" width="{PW}" height="{height - 2 * PY}" rx="6" fill="{PANEL}" stroke="{DIM}"/>',
        pixel(ST["title"], INFO_X, PY + 20), bar(INFO_X, BAR_Y, PW - 2 * PAD),
        f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">']
