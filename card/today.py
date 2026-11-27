@@ -133,12 +133,12 @@ def svg(t):
            f"<style>@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
            f".dot{{fill:{c['dot']}}}.key{{fill:{c['key']}}}.val{{fill:{c['val']}}}.head{{fill:{c['head']}}}"
            f".num{{fill:{c['num']}}}.add{{fill:{c['add']}}}.del{{fill:{c['dl']}}}"
-           # Every 5s a ripple runs down the portrait: each row swings sideways and lights up as it passes.
+           # Every 5s a ripple runs down the portrait: each row swings sideways as it passes.
            # The whole face also floats. Frame 0 is the still, whole face: viewers that freeze SVG images show it.
            f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-in-out infinite}}"
-           f"@keyframes wave{{0%{{transform:none;fill:{c['key']};fill-opacity:1}}"
+           f"@keyframes wave{{0%{{transform:none}}"
            f"5%{{transform:translateX({CW * 1.5}px)}}10%{{transform:translateX(-{CW}px)}}"
-           f"15%,100%{{transform:none;fill:{c['art']};fill-opacity:.9}}}}"
+           "15%,100%{transform:none}}"
            ".float{animation:float 4s ease-in-out infinite}@keyframes float{50%{transform:translateY(-5px)}}"
            # Status dot pulses. The prompt "types" CMD: a background-coloured cover and the cursor slide right
            # together one char per step, uncovering the text; hold, slide back (erase), every 8s.
