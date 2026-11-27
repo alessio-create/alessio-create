@@ -109,14 +109,20 @@ info = [
 STATUS_I = next(i for i, l in enumerate(info) if ("Status", "key") in l)
 PROMPT_I = len(info) - 1
 
-art = (HERE / "art.txt").read_text(encoding="utf-8").splitlines()
+# art.json (coloured, from ascii_color.py) wins over art.txt (plain). Row = runs of [text, colour, is_eye].
+J = HERE / "art.json"
+art = json.loads(J.read_text()) if J.exists() else     [[[l, None, False]] for l in (HERE / "art.txt").read_text(encoding="utf-8").splitlines()]
+ART_W = max(sum(len(r[0]) for r in row) for row in art)
 FS, LH, CW = 16, 20, 9.6          # font size, line height, JetBrains Mono advance (0.6em)
 ART_X, PAD = 28, 28
-INFO_X = ART_X + max(map(len, art)) * CW + 36
-rows = max(len(art), len(info))
+AFS = 11 if J.exists() else FS   # the coloured art uses a smaller font: more detail in the same space
+ACW, ALH = AFS * .6, AFS * 1.2
+INFO_X = ART_X + ART_W * ACW + 36
+H = max(len(art) * ALH, len(info) * LH)
 width = round(INFO_X + W * CW + PAD)
-height = rows * LH + PAD * 2
-info_top = PAD + (rows - len(info)) // 2 * LH   # center the info column against the art
+height = round(H + PAD * 2)
+info_top = round(PAD + (H - len(info) * LH) / 2)   # both columns centred vertically
+art_top = PAD + (H - len(art) * ALH) / 2
 
 font = base64.b64encode((HERE / "mono.ttf").read_bytes()).decode()
 THEMES = {
@@ -137,7 +143,7 @@ def svg(t):
            # The whole face also floats. Frame 0 is the still, whole face: viewers that freeze SVG images show it.
            f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-in-out infinite}}"
            f"@keyframes wave{{0%{{transform:none}}"
-           f"5%{{transform:translateX({CW * 1.5}px)}}10%{{transform:translateX(-{CW}px)}}"
+           f"5%{{transform:translateX({ACW * 2}px)}}10%{{transform:translateX(-{ACW * 1.5}px)}}"
            "15%,100%{transform:none}}"
            ".float{animation:float 4s ease-in-out infinite}@keyframes float{50%{transform:translateY(-5px)}}"
            # Status dot pulses. The prompt "types" CMD: a background-coloured cover and the cursor slide right
@@ -150,11 +156,26 @@ def svg(t):
            f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}"
            "92%,100%{transform:none}}"
            "@keyframes blink{50%{opacity:0}}"
-           "@media (prefers-reduced-motion:reduce){.a,.float,.live,.typer,.cur{animation:none}}</style>",
+           ".eye{filter:url(#glow);animation:glow 2.4s ease-in-out infinite}@keyframes glow{50%{opacity:.5}}"
+           "@media (prefers-reduced-motion:reduce){.a,.float,.live,.typer,.cur,.eye{animation:none}}</style>",
+           '<defs><filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/>'
+           '<feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>',
            f'<rect width="100%" height="100%" rx="14" fill="{c["bg"]}"/>']
+    if J.exists():  # the coloured art is made for a dark screen: give it a dark disc in the light theme too
+        out.append(f'<ellipse cx="{ART_X + ART_W * ACW / 2:.0f}" cy="{art_top + len(art) * ALH / 2 + 3:.0f}" '
+                   f'rx="{ART_W * ACW / 2 + 10:.0f}" ry="{len(art) * ALH / 2 + 10:.0f}" fill="{THEMES["dark"]["bg"]}"/>')
     out.append('<g class="float">')
-    out += [f'<text class="a" x="{ART_X}" y="{PAD + (i + 1) * LH}" xml:space="preserve" '
-            f'style="animation-delay:{300 + i * 70}ms">{html.escape(l) or " "}</text>' for i, l in enumerate(art)]
+    for i, row in enumerate(art):
+        y, col, plain, eyes = round(art_top + (i + 1) * ALH, 1), 0, "", []
+        for text, colour, is_eye in row:
+            if is_eye:  # drawn apart so it can glow; spaces keep the row aligned
+                eyes.append(f'<text class="eye" x="{ART_X + col * ACW:.1f}" y="{y}" font-size="{AFS}" fill="{colour}">{html.escape(text)}</text>')
+                plain += " " * len(text)
+            else:
+                plain += f'<tspan fill="{colour}">{html.escape(text)}</tspan>' if colour else html.escape(text)
+            col += len(text)
+        out.append(f'<g class="a" style="animation-delay:{300 + i * 70}ms">'
+                   f'<text x="{ART_X}" y="{y}" font-size="{AFS}" xml:space="preserve">{plain or " "}</text>{"".join(eyes)}</g>')
     out.append("</g>")
     out.append(f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">')
     for line in info:
