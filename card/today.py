@@ -75,6 +75,8 @@ def stat(key, value, cls="num"):
     return [(". ", "dot"), (key, "key"), (": ", "dot"), (value, cls)]
 
 blank = [(".", "dot")]
+STATUS = "open for new builds"
+PROMPT, CMD = "alessio@builder:~$ ", 'claude "build what\'s next"'  # CMD types itself, then erases
 info = [
     title("github@" + login, top=True),
     row("OS", "Claude Code"),
@@ -93,6 +95,7 @@ info = [
     row("Website", "alessiodaleo.xyz"),
     row("LinkedIn", "alessiodaleo"),
     row("Instagram", "@alessiodaleo_ai"),
+    row("Status", "  " + STATUS),  # the two spaces hold the pulsing dot, drawn as a circle
     blank,
     title("GitHub Stats"),
     stat("Repos", n(v["repositories"]["totalCount"])) + [(" | ", "dot")] + stat("PRs merged", n(v["pullRequests"]["totalCount"]))[1:],
@@ -100,7 +103,11 @@ info = [
     stat("Contributions", n(contributions)),
     stat("Lines of Code", n(added - deleted)) + [(" ( ", "dot"), (n(added) + "++", "add"), (", ", "dot"),
         (n(deleted) + "--", "del"), (" )", "dot")],
+    blank,
+    [("alessio@builder", "key"), (":", "dot"), ("~", "num"), ("$ ", "dot")],
 ]
+STATUS_I = next(i for i, l in enumerate(info) if ("Status", "key") in l)
+PROMPT_I = len(info) - 1
 
 art = (HERE / "art.txt").read_text(encoding="utf-8").splitlines()
 FS, LH, CW = 16, 20, 9.6          # font size, line height, JetBrains Mono advance (0.6em)
@@ -126,26 +133,43 @@ def svg(t):
            f"<style>@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
            f".dot{{fill:{c['dot']}}}.key{{fill:{c['key']}}}.val{{fill:{c['val']}}}.head{{fill:{c['head']}}}"
            f".num{{fill:{c['num']}}}.add{{fill:{c['add']}}}.del{{fill:{c['dl']}}}"
-           # A light runs down the portrait every 5s; a few rows glitch sideways now and then.
-           # Frame 0 is the whole face (no hidden start): viewers that freeze SVG images still show it.
-           f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-out infinite}}"
-           ".g{animation:wave 5s ease-out infinite,glitch 7s steps(1) infinite}"
-           f"@keyframes wave{{0%{{fill:{c['key']};fill-opacity:1}}10%,100%{{fill:{c['art']};fill-opacity:.9}}}}"
-           f"@keyframes glitch{{0%{{transform:translateX({CW}px);fill:{c['num']}}}1.5%{{transform:translateX(-{CW}px)}}"
-           "3%,100%{transform:none}}"
-           "@media (prefers-reduced-motion:reduce){.a{animation:none}}</style>",
+           # Every 5s a ripple runs down the portrait: each row swings sideways and lights up as it passes.
+           # The whole face also floats. Frame 0 is the still, whole face: viewers that freeze SVG images show it.
+           f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-in-out infinite}}"
+           f"@keyframes wave{{0%{{transform:none;fill:{c['key']};fill-opacity:1}}"
+           f"5%{{transform:translateX({CW * 1.5}px)}}10%{{transform:translateX(-{CW}px)}}"
+           f"15%,100%{{transform:none;fill:{c['art']};fill-opacity:.9}}}}"
+           ".float{animation:float 4s ease-in-out infinite}@keyframes float{50%{transform:translateY(-5px)}}"
+           # Status dot pulses. The prompt "types" CMD: a background-coloured cover and the cursor slide right
+           # together one char per step, uncovering the text; hold, slide back (erase), every 8s.
+           f".live{{fill:{c['add']};animation:pulse 2s ease-in-out infinite}}"
+           "@keyframes pulse{50%{opacity:.25}}"
+           f".cmd{{fill:{c['val']}}}.typer{{animation:move 8s infinite}}"
+           f".cur{{fill:{c['key']};animation:blink 1s steps(1) infinite}}"
+           f"@keyframes move{{0%{{transform:none;animation-timing-function:steps({len(CMD)},end)}}"
+           f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}"
+           "92%,100%{transform:none}}"
+           "@keyframes blink{50%{opacity:0}}"
+           "@media (prefers-reduced-motion:reduce){.a,.float,.live,.typer,.cur{animation:none}}</style>",
            f'<rect width="100%" height="100%" rx="14" fill="{c["bg"]}"/>']
-    GLITCH = {6: 3100, 13: 4600, 20: 5800}  # row -> delay (ms) of its sideways jump
-    for i, l in enumerate(art):
-        wave = f"{300 + i * 60}ms"
-        cls, delay = ("a g", f"{wave},{GLITCH[i]}ms") if i in GLITCH else ("a", wave)
-        out.append(f'<text class="{cls}" x="{ART_X}" y="{PAD + (i + 1) * LH}" xml:space="preserve" '
-                   f'style="animation-delay:{delay}">{html.escape(l) or " "}</text>')
+    out.append('<g class="float">')
+    out += [f'<text class="a" x="{ART_X}" y="{PAD + (i + 1) * LH}" xml:space="preserve" '
+            f'style="animation-delay:{300 + i * 70}ms">{html.escape(l) or " "}</text>' for i, l in enumerate(art)]
+    out.append("</g>")
     out.append(f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">')
     for line in info:
         segs = "".join(f'<tspan class="{cls}">{html.escape(s)}</tspan>' if cls else html.escape(s) for s, cls in line)
         out.append(f'<tspan x="{INFO_X:.0f}" dy="{LH}">{segs}</tspan>')
-    out.append("</text></svg>")
+    out.append("</text>")
+    base = lambda i: info_top + (i + 1) * LH                 # baseline of info row i
+    dot_x = INFO_X + (W - 1 - len(STATUS) - 2 + 0.5) * CW    # first of the two spaces before STATUS
+    cmd_x = INFO_X + len(PROMPT) * CW
+    out += [f'<circle class="live" cx="{dot_x:.1f}" cy="{base(STATUS_I) - FS * .32:.1f}" r="{FS * .3:.1f}"/>',
+            f'<text class="cmd" x="{cmd_x:.1f}" y="{base(PROMPT_I)}" xml:space="preserve">{html.escape(CMD)}</text>',
+            f'<g class="typer"><rect x="{cmd_x:.1f}" y="{base(PROMPT_I) - LH + 2}" width="{(len(CMD) + 1) * CW:.1f}" '
+            f'height="{LH}" fill="{c["bg"]}"/>',
+            f'<rect class="cur" x="{cmd_x:.1f}" y="{base(PROMPT_I) - FS * .8:.1f}" width="{CW:.1f}" height="{FS:.0f}"/></g>',
+            "</svg>"]
     return "\n".join(out)
 
 for t in THEMES:
