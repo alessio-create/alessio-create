@@ -1,4 +1,4 @@
-# Draws the profile card (card/card.svg): a CRT terminal with live GitHub stats, my dithered portrait, binary rain.
+# Draws the profile card (card/card.svg): a CRT terminal with live GitHub stats, my ASCII shadow, binary rain.
 # The look lives in crt.py; the portrait and titles come from static.py (run locally).
 # Needs GH_TOKEN: a classic token with `repo` + `read:user`, so private repos are counted.
 # Runs daily from .github/workflows/card.yml. Locally: GH_TOKEN=$(gh auth token) py card/today.py
@@ -125,7 +125,8 @@ FX, FY = 6, height - FH                                       # the figure stand
 EX, EY = FX + ST["eye"][0], FY + ST["eye"][1]
 b64 = lambda f: base64.b64encode((HERE / f).read_bytes()).decode()
 font = b64("mono.ttf")
-C = dict(dot=DIM, key=G2, val=PALE, head=G, num=G, add=G, dl=RED)
+C = dict(dot=DIM, key=G2, val=PALE, head=G, num=G, add=G, dl=RED,
+         s0="#0B2014", s1="#123321", s2="#1C4A30", s3="#2C6A45", rim=G2)   # shadow tones dark -> light, rim
 
 css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
        + "".join(f".{k}{{fill:{c}}}" for k, c in C.items() if k != "dl") + f".del{{fill:{RED}}}" + CSS
@@ -138,6 +139,13 @@ css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) for
        + ".ans{animation:ans 8s infinite}@keyframes ans{0%,22%{opacity:0}23%,85%{opacity:1}86%,100%{opacity:0}}"
        + "@media (prefers-reduced-motion:reduce){.eye,.live,.typer,.cur,.ans{animation:none}}")
 
+def shadow_svg():  # my silhouette in ASCII (rows of [text, tone] from static.py)
+    sh, out = ST["shadow"], []
+    for i, row in enumerate(sh["rows"]):
+        spans = "".join(f'<tspan class="{c}">{html.escape(t)}</tspan>' if c else t for t, c in row)
+        out.append(f'<text x="{FX}" y="{FY + (i + 1) * sh["lh"]}" font-size="{sh["fs"]}" xml:space="preserve">{spans}</text>')
+    return "".join(out)
+
 base = lambda i: info_top + (i + 1) * LH                       # baseline of info row i
 dot_x = INFO_X + (W - 1 - len(STATUS) - 2 + 0.5) * CW          # first of the two spaces before STATUS
 cmd_x = INFO_X + len(PROMPT) * CW
@@ -147,7 +155,7 @@ out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height
        f'<rect width="100%" height="100%" rx="14" fill="{BG}"/><g class="flick">',
        f'<g opacity=".6">{rain(8, PX, height, seed=1)}</g>',
        f'<image href="data:image/png;base64,{b64("halo.png")}" x="{FX}" y="{FY}" width="{FW}" height="{FH}"/>',
-       f'<image href="data:image/png;base64,{b64("figure.png")}" x="{FX}" y="{FY}" width="{FW}" height="{FH}" style="image-rendering:pixelated"/>',
+       shadow_svg(),
        f'<circle class="eye" cx="{EX}" cy="{EY}" r="8" fill="{RED}" filter="url(#glow)"/><circle cx="{EX}" cy="{EY}" r="3" fill="#FFC2B8"/>',
        f'<rect x="{PX}" y="{PY}" width="{PW}" height="{height - 2 * PY}" rx="6" fill="{PANEL}" stroke="{DIM}"/>',
        pixel(ST["title"], INFO_X, PY + 20), bar(INFO_X, BAR_Y, PW - 2 * PAD),
