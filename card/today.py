@@ -1,10 +1,13 @@
-# Draws the neofetch-style profile card (card/dark.svg, card/light.svg) with live GitHub stats.
+# Draws the profile card (card/card.svg): a CRT terminal with live GitHub stats, my dithered portrait, binary rain.
+# The look lives in crt.py; the portrait and titles come from static.py (run locally).
 # Needs GH_TOKEN: a classic token with `repo` + `read:user`, so private repos are counted.
 # Runs daily from .github/workflows/card.yml. Locally: GH_TOKEN=$(gh auth token) py card/today.py
 import base64, datetime, html, json, os, sys, time, urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).parent
+sys.path.insert(0, str(HERE))
+from crt import BG, CSS, DEFS, DIM, G, G2, PALE, PANEL, RED, bar, pixel, rain
 TOKEN = os.environ.get("GH_TOKEN")
 if not TOKEN:
     print("GH_TOKEN missing: keeping the last card"); sys.exit(0)
@@ -76,7 +79,7 @@ def stat(key, value, cls="num"):
 
 blank = [(".", "dot")]
 STATUS = "open for new builds"
-PROMPT, CMD = "alessio@builder:~$ ", 'claude "build what\'s next"'  # CMD types itself, then erases
+PROMPT, CMD, ANSWER = "alessio@builder:~$ ", "human --verify", "> yes. probably."  # CMD types itself, ANSWER shows, both erase
 info = [
     title("github@" + login, top=True),
     row("OS", "Claude Code"),
@@ -109,90 +112,55 @@ info = [
 STATUS_I = next(i for i, l in enumerate(info) if ("Status", "key") in l)
 PROMPT_I = len(info) - 1
 
-# art.json (coloured, from ascii_color.py) wins over art.txt (plain). Row = runs of [text, colour, is_eye].
-J = HERE / "art.json"
-art = json.loads(J.read_text()) if J.exists() else     [[[l, None, False]] for l in (HERE / "art.txt").read_text(encoding="utf-8").splitlines()]
-ART_W = max(sum(len(r[0]) for r in row) for row in art)
-FS, LH, CW = 16, 20, 9.6          # font size, line height, JetBrains Mono advance (0.6em)
-ART_X, PAD = 28, 28
-AFS = 11 if J.exists() else FS   # the coloured art uses a smaller font: more detail in the same space
-ACW, ALH = AFS * .6, AFS * 1.2
-INFO_X = ART_X + ART_W * ACW + 36
-H = max(len(art) * ALH, len(info) * LH)
-width = round(INFO_X + W * CW + PAD)
-height = round(H + PAD * 2)
-info_top = round(PAD + (H - len(info) * LH) / 2)   # both columns centred vertically
-art_top = PAD + (H - len(art) * ALH) / 2
+ST = json.loads((HERE / "static.json").read_text())          # made by static.py
+FS, LH, CW = 16, 20, 9.6                                      # font size, line height, JetBrains Mono advance (0.6em)
+FW, FH = ST["fig"]
+PX, PY, PAD = 470, 28, 22                                     # terminal panel: left edge, top, inner padding
+PW = round(W * CW + PAD * 2)
+INFO_X, BAR_Y = PX + PAD, PY + 24 + ST["title"]["size"][1] * 4 + 12
+info_top = BAR_Y + 26
+height = round(info_top + (len(info) + 1) * LH + 18 + PY)     # +1 row: the answer under the prompt
+width = PX + PW + 28
+FX, FY = 6, height - FH                                       # the figure stands on the bottom edge
+EX, EY = FX + ST["eye"][0], FY + ST["eye"][1]
+b64 = lambda f: base64.b64encode((HERE / f).read_bytes()).decode()
+font = b64("mono.ttf")
+C = dict(dot=DIM, key=G2, val=PALE, head=G, num=G, add=G, dl=RED)
 
-font = base64.b64encode((HERE / "mono.ttf").read_bytes()).decode()
-THEMES = {
-    "dark":  dict(bg="#0E0F13", art="#F6F2E7", dot="#5B616E", key="#5B9BF5", val="#F6F2E7", head="#F6F2E7",
-                  num="#E8F04B", add="#7FD88F", dl="#E7302F"),
-    "light": dict(bg="#F6F2E7", art="#0E0F13", dot="#9A968A", key="#0F5FCC", val="#0E0F13", head="#0E0F13",
-                  num="#0A3E8C", add="#1E7A34", dl="#C4231F"),
-}
+css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
+       + "".join(f".{k}{{fill:{c}}}" for k, c in C.items() if k != "dl") + f".del{{fill:{RED}}}" + CSS
+       # red eye pulses; status dot pulses; the prompt types CMD (a panel-coloured cover + cursor slide right together),
+       # the answer appears, both erase: every 8s
+       + ".eye{animation:pulse 2.2s ease-in-out infinite}.live{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{opacity:.4}}"
+       + f".typer{{animation:move 8s infinite}}.cur{{animation:blink 1s steps(1) infinite}}@keyframes blink{{50%{{opacity:0}}}}"
+       + f"@keyframes move{{0%{{transform:none;animation-timing-function:steps({len(CMD)},end)}}"
+       + f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}92%,100%{{transform:none}}}}"
+       + ".ans{animation:ans 8s infinite}@keyframes ans{0%,22%{opacity:0}23%,85%{opacity:1}86%,100%{opacity:0}}"
+       + "@media (prefers-reduced-motion:reduce){.eye,.live,.typer,.cur,.ans{animation:none}}")
 
-def svg(t):
-    c = THEMES[t]
-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
-           f'font-family="JBMono, Consolas, Menlo, monospace" font-size="{FS}" role="img" aria-label="{login} profile card">',
-           f"<style>@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
-           f".dot{{fill:{c['dot']}}}.key{{fill:{c['key']}}}.val{{fill:{c['val']}}}.head{{fill:{c['head']}}}"
-           f".num{{fill:{c['num']}}}.add{{fill:{c['add']}}}.del{{fill:{c['dl']}}}"
-           # Every 5s a ripple runs down the portrait: each row swings sideways as it passes.
-           # The whole face also floats. Frame 0 is the still, whole face: viewers that freeze SVG images show it.
-           f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-in-out infinite}}"
-           f"@keyframes wave{{0%{{transform:none}}"
-           f"5%{{transform:translateX({ACW * 2}px)}}10%{{transform:translateX(-{ACW * 1.5}px)}}"
-           "15%,100%{transform:none}}"
-           ".float{animation:float 4s ease-in-out infinite}@keyframes float{50%{transform:translateY(-5px)}}"
-           # Status dot pulses. The prompt "types" CMD: a background-coloured cover and the cursor slide right
-           # together one char per step, uncovering the text; hold, slide back (erase), every 8s.
-           f".live{{fill:{c['add']};animation:pulse 2s ease-in-out infinite}}"
-           "@keyframes pulse{50%{opacity:.25}}"
-           f".cmd{{fill:{c['val']}}}.typer{{animation:move 8s infinite}}"
-           f".cur{{fill:{c['key']};animation:blink 1s steps(1) infinite}}"
-           f"@keyframes move{{0%{{transform:none;animation-timing-function:steps({len(CMD)},end)}}"
-           f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}"
-           "92%,100%{transform:none}}"
-           "@keyframes blink{50%{opacity:0}}"
-           ".eye{filter:url(#glow);animation:glow 2.4s ease-in-out infinite}@keyframes glow{50%{opacity:.5}}"
-           "@media (prefers-reduced-motion:reduce){.a,.float,.live,.typer,.cur,.eye{animation:none}}</style>",
-           '<defs><filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="b"/>'
-           '<feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>',
-           f'<rect width="100%" height="100%" rx="14" fill="{c["bg"]}"/>']
-    if J.exists():  # the coloured art is made for a dark screen: give it a dark disc in the light theme too
-        out.append(f'<ellipse cx="{ART_X + ART_W * ACW / 2:.0f}" cy="{art_top + len(art) * ALH / 2 + 3:.0f}" '
-                   f'rx="{ART_W * ACW / 2 + 10:.0f}" ry="{len(art) * ALH / 2 + 10:.0f}" fill="{THEMES["dark"]["bg"]}"/>')
-    out.append('<g class="float">')
-    for i, row in enumerate(art):
-        y, col, plain, eyes = round(art_top + (i + 1) * ALH, 1), 0, "", []
-        for text, colour, is_eye in row:
-            if is_eye:  # drawn apart so it can glow; spaces keep the row aligned
-                eyes.append(f'<text class="eye" x="{ART_X + col * ACW:.1f}" y="{y}" font-size="{AFS}" fill="{colour}">{html.escape(text)}</text>')
-                plain += " " * len(text)
-            else:
-                plain += f'<tspan fill="{colour}">{html.escape(text)}</tspan>' if colour else html.escape(text)
-            col += len(text)
-        out.append(f'<g class="a" style="animation-delay:{300 + i * 70}ms">'
-                   f'<text x="{ART_X}" y="{y}" font-size="{AFS}" xml:space="preserve">{plain or " "}</text>{"".join(eyes)}</g>')
-    out.append("</g>")
-    out.append(f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">')
-    for line in info:
-        segs = "".join(f'<tspan class="{cls}">{html.escape(s)}</tspan>' if cls else html.escape(s) for s, cls in line)
-        out.append(f'<tspan x="{INFO_X:.0f}" dy="{LH}">{segs}</tspan>')
-    out.append("</text>")
-    base = lambda i: info_top + (i + 1) * LH                 # baseline of info row i
-    dot_x = INFO_X + (W - 1 - len(STATUS) - 2 + 0.5) * CW    # first of the two spaces before STATUS
-    cmd_x = INFO_X + len(PROMPT) * CW
-    out += [f'<circle class="live" cx="{dot_x:.1f}" cy="{base(STATUS_I) - FS * .32:.1f}" r="{FS * .3:.1f}"/>',
-            f'<text class="cmd" x="{cmd_x:.1f}" y="{base(PROMPT_I)}" xml:space="preserve">{html.escape(CMD)}</text>',
-            f'<g class="typer"><rect x="{cmd_x:.1f}" y="{base(PROMPT_I) - LH + 2}" width="{(len(CMD) + 1) * CW:.1f}" '
-            f'height="{LH}" fill="{c["bg"]}"/>',
-            f'<rect class="cur" x="{cmd_x:.1f}" y="{base(PROMPT_I) - FS * .8:.1f}" width="{CW:.1f}" height="{FS:.0f}"/></g>',
-            "</svg>"]
-    return "\n".join(out)
-
-for t in THEMES:
-    (HERE / f"{t}.svg").write_text(svg(t), encoding="utf-8")
+base = lambda i: info_top + (i + 1) * LH                       # baseline of info row i
+dot_x = INFO_X + (W - 1 - len(STATUS) - 2 + 0.5) * CW          # first of the two spaces before STATUS
+cmd_x = INFO_X + len(PROMPT) * CW
+out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
+       f'font-family="JBMono, Consolas, Menlo, monospace" font-size="{FS}" role="img" aria-label="{login} profile card">',
+       f"<style>{css}</style>", DEFS,
+       f'<rect width="100%" height="100%" rx="14" fill="{BG}"/><g class="flick">',
+       f'<g opacity=".6">{rain(8, PX, height, seed=1)}</g>',
+       f'<image href="data:image/png;base64,{b64("halo.png")}" x="{FX}" y="{FY}" width="{FW}" height="{FH}"/>',
+       f'<image href="data:image/png;base64,{b64("figure.png")}" x="{FX}" y="{FY}" width="{FW}" height="{FH}" style="image-rendering:pixelated"/>',
+       f'<circle class="eye" cx="{EX}" cy="{EY}" r="8" fill="{RED}" filter="url(#glow)"/><circle cx="{EX}" cy="{EY}" r="3" fill="#FFC2B8"/>',
+       f'<rect x="{PX}" y="{PY}" width="{PW}" height="{height - 2 * PY}" rx="6" fill="{PANEL}" stroke="{DIM}"/>',
+       pixel(ST["title"], INFO_X, PY + 20), bar(INFO_X, BAR_Y, PW - 2 * PAD),
+       f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">']
+for line in info:
+    segs = "".join(f'<tspan class="{cls}">{html.escape(s)}</tspan>' if cls else html.escape(s) for s, cls in line)
+    out.append(f'<tspan x="{INFO_X:.0f}" dy="{LH}">{segs}</tspan>')
+out += ["</text>",
+        f'<circle class="live" cx="{dot_x:.1f}" cy="{base(STATUS_I) - FS * .32:.1f}" r="{FS * .3:.1f}" fill="{G}"/>',
+        f'<text x="{cmd_x:.1f}" y="{base(PROMPT_I)}" fill="{PALE}" xml:space="preserve">{html.escape(CMD)}</text>',
+        f'<text class="ans" x="{INFO_X}" y="{base(PROMPT_I + 1)}" fill="{RED}" xml:space="preserve">{html.escape(ANSWER)}</text>',
+        f'<g class="typer"><rect x="{cmd_x:.1f}" y="{base(PROMPT_I) - LH + 2}" width="{(len(CMD) + 1) * CW:.1f}" height="{LH + 4}" fill="{PANEL}"/>',
+        f'<rect class="cur" x="{cmd_x:.1f}" y="{base(PROMPT_I) - FS * .8:.1f}" width="{CW:.1f}" height="{FS:.0f}" fill="{G}"/></g>',
+        f'</g><rect width="100%" height="100%" rx="14" fill="url(#sl)"/></svg>']
+(HERE / "card.svg").write_text("\n".join(out), encoding="utf-8")
 print(f"repos {len(repos)} commits {commits} claude {bot_commits} +{added} -{deleted} contributions {contributions}")

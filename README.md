@@ -1,9 +1,6 @@
 # Builder. Yes, I'm a human.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="card/dark.svg">
-  <img src="card/light.svg" width="100%" alt="Alessio D'Aleo profile card: ASCII portrait, stack and live GitHub stats">
-</picture>
+<img src="card/card.svg" width="100%" alt="Alessio D'Aleo profile card: dithered portrait with a red cyborg eye, binary rain, stack and live GitHub stats">
 
 ### I build the systems that make growth happen.
 
@@ -12,12 +9,12 @@ I design the system, build it with **Claude Code**, **Codex** and **Lovable**, a
 Every tool I talk about, I've put into production first.
 
 <p>
-  <a href="https://www.alessiodaleo.xyz"><img src="https://img.shields.io/badge/website-alessiodaleo.xyz-0F5FCC?style=for-the-badge&labelColor=0E0F13" alt="Website"></a>
-  <a href="https://www.linkedin.com/in/alessiodaleo"><img src="https://img.shields.io/badge/LinkedIn-alessiodaleo-0F5FCC?style=for-the-badge&labelColor=0E0F13" alt="LinkedIn"></a>
-  <a href="https://www.instagram.com/alessiodaleo_ai"><img src="https://img.shields.io/badge/Instagram-@alessiodaleo__ai-E7302F?style=for-the-badge&logo=instagram&logoColor=white&labelColor=0E0F13" alt="Instagram"></a>
+  <a href="https://www.alessiodaleo.xyz"><img src="https://img.shields.io/badge/website-alessiodaleo.xyz-1F8A3B?style=for-the-badge&labelColor=050907" alt="Website"></a>
+  <a href="https://www.linkedin.com/in/alessiodaleo"><img src="https://img.shields.io/badge/LinkedIn-alessiodaleo-1F8A3B?style=for-the-badge&labelColor=050907" alt="LinkedIn"></a>
+  <a href="https://www.instagram.com/alessiodaleo_ai"><img src="https://img.shields.io/badge/Instagram-@alessiodaleo__ai-1F8A3B?style=for-the-badge&logo=instagram&logoColor=39FF6A&labelColor=050907" alt="Instagram"></a>
 </p>
 
-## What I've built
+<img src="card/h-built.svg" width="100%" alt="What I've built">
 
 <table>
 <tr>
@@ -66,31 +63,31 @@ The setup I run my work on: memory that writes itself at the end of each session
 </tr>
 </table>
 
-## How I build
+<img src="card/h-build.svg" width="100%" alt="How I build">
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/alessio-create/alessio-create/output/snake-dark.svg">
   <img alt="Contribution graph eaten by a snake" src="https://raw.githubusercontent.com/alessio-create/alessio-create/output/snake-light.svg" width="100%">
 </picture>
 
-<img src="https://streak-stats.demolab.com?user=alessio-create&hide_current_streak=true&background=00000000&ring=0F5FCC&fire=E7302F&currStreakNum=0F5FCC&sideNums=0F5FCC&sideLabels=8B949E&dates=8B949E&stroke=30363D&border=30363D" alt="Total contributions and longest streak" height="150">
+<img src="https://streak-stats.demolab.com?user=alessio-create&hide_current_streak=true&background=050907&ring=39FF6A&fire=FF4433&currStreakNum=39FF6A&sideNums=39FF6A&sideLabels=7FBF8F&dates=4A7A55&stroke=1E5A33&border=1E5A33" alt="Total contributions and longest streak" height="150">
 
 My own setup runs on AI: Claude Code as the operating system, 25+ tools connected via MCP, 15 scheduled cloud routines and agents that handle the execution. I keep my time for judgement and architecture.
 
 <p>
-  <img src="https://img.shields.io/badge/Claude_Code-D97757?style=flat-square&logo=claude&logoColor=white" alt="Claude Code">
-  <img src="https://img.shields.io/badge/Codex-0A3E8C?style=flat-square" alt="Codex">
-  <img src="https://img.shields.io/badge/Lovable-E7302F?style=flat-square" alt="Lovable">
-  <img src="https://img.shields.io/badge/n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white" alt="n8n">
-  <img src="https://img.shields.io/badge/Make-6D00CC?style=flat-square&logo=make&logoColor=white" alt="Make">
-  <img src="https://img.shields.io/badge/MCP-0F5FCC?style=flat-square&logo=modelcontextprotocol&logoColor=white" alt="MCP">
-  <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase">
-  <img src="https://img.shields.io/badge/Vercel-0E0F13?style=flat-square&logo=vercel&logoColor=white" alt="Vercel">
-  <img src="https://img.shields.io/badge/Airtable-18BFFF?style=flat-square&logo=airtable&logoColor=white" alt="Airtable">
-  <img src="https://img.shields.io/badge/Meta_Ads-0866FF?style=flat-square&logo=meta&logoColor=white" alt="Meta Ads">
+  <img src="https://img.shields.io/badge/Claude_Code-0F2A17?style=flat-square&logo=claude&logoColor=39FF6A" alt="Claude Code">
+  <img src="https://img.shields.io/badge/Codex-0F2A17?style=flat-square&logoColor=39FF6A" alt="Codex">
+  <img src="https://img.shields.io/badge/Lovable-0F2A17?style=flat-square&logoColor=39FF6A" alt="Lovable">
+  <img src="https://img.shields.io/badge/n8n-0F2A17?style=flat-square&logo=n8n&logoColor=39FF6A" alt="n8n">
+  <img src="https://img.shields.io/badge/Make-0F2A17?style=flat-square&logo=make&logoColor=39FF6A" alt="Make">
+  <img src="https://img.shields.io/badge/MCP-0F2A17?style=flat-square&logo=modelcontextprotocol&logoColor=39FF6A" alt="MCP">
+  <img src="https://img.shields.io/badge/Supabase-0F2A17?style=flat-square&logo=supabase&logoColor=39FF6A" alt="Supabase">
+  <img src="https://img.shields.io/badge/Vercel-0F2A17?style=flat-square&logo=vercel&logoColor=39FF6A" alt="Vercel">
+  <img src="https://img.shields.io/badge/Airtable-0F2A17?style=flat-square&logo=airtable&logoColor=39FF6A" alt="Airtable">
+  <img src="https://img.shields.io/badge/Meta_Ads-0F2A17?style=flat-square&logo=meta&logoColor=39FF6A" alt="Meta Ads">
 </p>
 
-## How I work
+<img src="card/h-work.svg" width="100%" alt="How I work">
 
 - **Show the work first.** If I talk about a system, there's a working one behind it.
 - **Tools are leverage.** I design the system; agents and automations handle the execution.
