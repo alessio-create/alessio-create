@@ -125,11 +125,23 @@ def svg(t):
            f'font-family="JBMono, Consolas, Menlo, monospace" font-size="{FS}" role="img" aria-label="{login} profile card">',
            f"<style>@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) format('truetype')}}text{{font-variant-ligatures:none}}"
            f".dot{{fill:{c['dot']}}}.key{{fill:{c['key']}}}.val{{fill:{c['val']}}}.head{{fill:{c['head']}}}"
-           f".num{{fill:{c['num']}}}.add{{fill:{c['add']}}}.del{{fill:{c['dl']}}}</style>",
-           f'<rect width="100%" height="100%" rx="14" fill="{c["bg"]}"/>',
-           f'<text x="{ART_X}" y="{PAD}" fill="{c["art"]}" fill-opacity=".9" xml:space="preserve">']
-    out += [f'<tspan x="{ART_X}" dy="{LH}">{html.escape(l) or " "}</tspan>' for l in art]
-    out.append(f'</text><text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">')
+           f".num{{fill:{c['num']}}}.add{{fill:{c['add']}}}.del{{fill:{c['dl']}}}"
+           # A light runs down the portrait every 5s; a few rows glitch sideways now and then.
+           # Frame 0 is the whole face (no hidden start): viewers that freeze SVG images still show it.
+           f".a{{fill:{c['art']};fill-opacity:.9;animation:wave 5s ease-out infinite}}"
+           ".g{animation:wave 5s ease-out infinite,glitch 7s steps(1) infinite}"
+           f"@keyframes wave{{0%{{fill:{c['key']};fill-opacity:1}}10%,100%{{fill:{c['art']};fill-opacity:.9}}}}"
+           f"@keyframes glitch{{0%{{transform:translateX({CW}px);fill:{c['num']}}}1.5%{{transform:translateX(-{CW}px)}}"
+           "3%,100%{transform:none}}"
+           "@media (prefers-reduced-motion:reduce){.a{animation:none}}</style>",
+           f'<rect width="100%" height="100%" rx="14" fill="{c["bg"]}"/>']
+    GLITCH = {6: 3100, 13: 4600, 20: 5800}  # row -> delay (ms) of its sideways jump
+    for i, l in enumerate(art):
+        wave = f"{300 + i * 60}ms"
+        cls, delay = ("a g", f"{wave},{GLITCH[i]}ms") if i in GLITCH else ("a", wave)
+        out.append(f'<text class="{cls}" x="{ART_X}" y="{PAD + (i + 1) * LH}" xml:space="preserve" '
+                   f'style="animation-delay:{delay}">{html.escape(l) or " "}</text>')
+    out.append(f'<text x="{INFO_X:.0f}" y="{info_top}" xml:space="preserve">')
     for line in info:
         segs = "".join(f'<tspan class="{cls}">{html.escape(s)}</tspan>' if cls else html.escape(s) for s, cls in line)
         out.append(f'<tspan x="{INFO_X:.0f}" dy="{LH}">{segs}</tspan>')
