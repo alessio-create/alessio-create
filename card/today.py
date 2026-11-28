@@ -136,9 +136,9 @@ css = (f"@font-face{{font-family:JBMono;src:url(data:font/ttf;base64,{font}) for
        + f"@keyframes move{{0%{{transform:none;animation-timing-function:steps({len(CMD)},end)}}"
        + f"20%,85%{{transform:translateX({len(CMD) * CW}px)}}85%{{animation-timing-function:steps(8,end)}}92%,100%{{transform:none}}}}"
        + ".ans{animation:ans 8s infinite}@keyframes ans{0%,22%{opacity:0}23%,85%{opacity:1}86%,100%{opacity:0}}"
-       # portrait: a few rows jump sideways now and then (flashing pale/red); the whole block glitches too (.glitch)
+       # portrait: a few rows jump sideways now and then (movement only, no colour); the whole block glitches too (.glitch)
        + f".row{{fill:{G};fill-opacity:.85}}.rg{{animation:rg 7s steps(1) infinite}}"
-       + f"@keyframes rg{{0%{{transform:translateX({A['cw'] * 3}px);fill:{PALE}}}2%{{transform:translateX(-{A['cw'] * 2}px);fill:{RED}}}4%,100%{{transform:none}}}}"
+       + f"@keyframes rg{{0%{{transform:translateX({A['cw'] * 3}px)}}2%{{transform:translateX(-{A['cw'] * 2}px)}}4%,100%{{transform:none}}}}"
        + "@media (prefers-reduced-motion:reduce){.eye,.live,.typer,.cur,.ans,.rg{animation:none}}")
 
 GLITCH = {3: (1.3, 7), 8: (3.1, 9), 13: (4.4, 6.5), 19: (5.7, 11), 23: (2.2, 8)}   # row: (delay s, period s)
