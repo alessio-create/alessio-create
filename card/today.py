@@ -150,8 +150,9 @@ def art_svg():  # the ASCII portrait; the red eye sits inside the same block so 
         if i in GLITCH: cls, st = "row rg", f' style="animation-delay:{GLITCH[i][0]}s;animation-duration:{GLITCH[i][1]}s"'
         out.append(f'<text class="{cls}"{st} x="{FX}" y="{FY + (i + 1) * A["lh"]:.1f}" font-size="{A["fs"]}" '
                    f'xml:space="preserve">{html.escape(line) or " "}</text>')
-    out.append(f'<circle class="eye" cx="{EX}" cy="{EY}" r="7" fill="{RED}" filter="url(#glow)"/>'
-               f'<circle cx="{EX}" cy="{EY}" r="2.5" fill="#FFC2B8"/></g>')
+    out.append(f'<g class="eye"><circle cx="{EX}" cy="{EY}" r="30" fill="{RED}" fill-opacity=".55" filter="url(#haze)"/>'   # wide haze
+               f'<circle cx="{EX}" cy="{EY}" r="10" fill="{RED}" filter="url(#glow)"/>'                                       # glowing core
+               f'<circle cx="{EX}" cy="{EY}" r="3.5" fill="#FFD9D2"/></g></g>')
     return "".join(out)
 
 base = lambda i: info_top + (i + 1) * LH                       # baseline of info row i

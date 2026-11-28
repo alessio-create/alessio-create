@@ -7,7 +7,8 @@ G, G2, PALE, DIM, DEEP, RED, BG, PANEL = "#39FF6A", "#29B85A", "#C8FFD6", "#1E5A
 DEFS = ('<defs><pattern id="sl" width="4" height="3" patternUnits="userSpaceOnUse">'
         '<rect width="4" height="1" fill="#000" fill-opacity=".38"/></pattern>'
         '<filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="5" result="b"/>'
-        '<feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>')
+        '<feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+        '<filter id="haze" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="14"/></filter></defs>')
 
 CSS = (f".hd{{fill:{PALE}}}"
        ".flick{animation:flick 7s infinite}@keyframes flick{0%,95%,100%{opacity:1}96%{opacity:.7}97%{opacity:1}98%{opacity:.8}}"
