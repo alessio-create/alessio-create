@@ -1,12 +1,12 @@
 # Builder. Yes, I'm a human.
 
-<img src="card/card.svg" width="100%" alt="Alessio D'Aleo profile card: dithered portrait with a red cyborg eye, binary rain, stack and live GitHub stats">
+<img src="card/card.svg" width="100%" alt="Alessio D'Aleo profile card: ASCII portrait with a red cyborg eye, binary rain, stack and live GitHub stats">
 
-### I build the systems that make growth happen.
+### You run the business. I build the engine under the hood.
 
-AI agents, client-acquisition engines, websites and internal tools, shipped for real clients.
+AI agents, client-acquisition engines, websites and internal tools, in production for real clients, much of it for Italian law firms.
 I design the system, build it with **Claude Code**, **Codex** and **Lovable**, and keep it running with **n8n** and **Make**.
-Every tool I talk about, I've put into production first.
+If I mention a tool, I've shipped with it.
 
 <p>
   <a href="https://www.alessiodaleo.xyz"><img src="https://img.shields.io/badge/website-alessiodaleo.xyz-1F8A3B?style=for-the-badge&labelColor=050907" alt="Website"></a>
@@ -20,14 +20,14 @@ Every tool I talk about, I've put into production first.
 <tr>
 <td width="50%" valign="top">
 
-**Studio OS** · an operating system for law firms<br>
-CRM, matters, team email, document automation, e-signature, invoicing, payments, an in-app AI assistant and an MCP server so a firm can work straight from Claude. Designed, built and shipped to production daily.
+**Studio OS** · the operating system of a law firm<br>
+CRM, matters, team email, document automation, e-signature, invoicing and payments in one app. An AI assistant inside it, plus an MCP server so the firm can work straight from Claude. Designed, built and shipped to production.
 
 </td>
 <td width="50%" valign="top">
 
-**An AI agent team** · marketing delivery on autopilot<br>
-12 agents that run a client's marketing production end to end: research, strategy, ads, copy, SEO, website, landing pages and email. Human approval gates, automatic review and retry, cost tracking.
+**An AI agent team** · marketing delivery, a human at the gates<br>
+12 agents run a client's marketing production end to end: research, strategy, ads, copy, SEO, website, landing pages, email. A human approves each gate; the system reviews its own output, retries and tracks cost.
 
 </td>
 </tr>
@@ -35,7 +35,7 @@ CRM, matters, team email, document automation, e-signature, invoicing, payments,
 <td width="50%" valign="top">
 
 **Acquisition engines** · for 25+ Italian law firms<br>
-Lead-generation campaigns, conversion-focused websites, quiz funnels, automated intake and nurturing. 16 websites in 3 months with AI app builders.
+Lead-generation campaigns, websites built to convert, quiz funnels, automated intake and nurturing. 16 websites in 3 months, built with AI app builders.
 
 </td>
 <td width="50%" valign="top">
@@ -50,7 +50,7 @@ The kit from my workshop on building your own team of AI agents: Leo, the chief 
 <td colspan="2" valign="top">
 
 **[Claude Code OS](https://github.com/alessio-create/claude-code-os)** · open source<br>
-The setup I run my work on: memory that writes itself at the end of each session, agents that learn from their own mistakes, skills that improve from real use.
+The setup I run my own work on. Memory that writes itself at the end of each session, agents that learn from their own mistakes, skills that improve with real use.
 
 </td>
 </tr>
@@ -72,7 +72,7 @@ The setup I run my work on: memory that writes itself at the end of each session
 
 <img src="https://streak-stats.demolab.com?user=alessio-create&hide_current_streak=true&background=050907&ring=39FF6A&fire=FF4433&currStreakNum=39FF6A&sideNums=39FF6A&sideLabels=7FBF8F&dates=4A7A55&stroke=1E5A33&border=1E5A33" alt="Total contributions and longest streak" height="150">
 
-My own setup runs on AI: Claude Code as the operating system, 25+ tools connected via MCP, 15 scheduled cloud routines and agents that handle the execution. I keep my time for judgement and architecture.
+The graph above is the receipt. My own setup runs on the same stack I sell: Claude Code as the operating system, 25+ tools connected via MCP, scheduled cloud routines, agents that do the execution. My hours go to judgement and architecture.
 
 <p>
   <img src="https://img.shields.io/badge/Claude_Code-0F2A17?style=flat-square&logo=claude&logoColor=39FF6A" alt="Claude Code">
@@ -89,8 +89,8 @@ My own setup runs on AI: Claude Code as the operating system, 25+ tools connecte
 
 <img src="card/h-work.svg" width="100%" alt="How I work">
 
-- **Show the work first.** If I talk about a system, there's a working one behind it.
-- **Tools are leverage.** I design the system; agents and automations handle the execution.
+- **Running system first, talk second.** If I mention a system, there's a working one behind it.
+- **I design, machines execute.** I own the architecture; agents and automations do the repeat work.
 - **Build in public.** I share what works, what breaks and what it costs.
 - **Write it down, then make it true.**
 
@@ -98,4 +98,4 @@ My own setup runs on AI: Claude Code as the operating system, 25+ tools connecte
 
 > *"No one around me was doing this. I did it anyway."*
 
-**Open for new builds.** Got a problem nobody around you has solved yet? [Message me on LinkedIn](https://www.linkedin.com/in/alessiodaleo).
+**Open for new builds.** Send me the process your team still does by hand every week. [Message me on LinkedIn](https://www.linkedin.com/in/alessiodaleo).
